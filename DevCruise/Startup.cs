@@ -1,9 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Euricom.DevCruise.Extensions;
 using Euricom.DevCruise.Model;
+using Euricom.DevCruise.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +16,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json.Serialization;
 
 namespace Euricom.DevCruise
 {
@@ -25,6 +29,7 @@ namespace Euricom.DevCruise
 
         public IConfiguration Configuration { get; }
         public IWebHostEnvironment WebHostEnvironment { get; }
+        public IApiVersionDescriptionProvider ApiVersionDescriptionProvider { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,11 +42,40 @@ namespace Euricom.DevCruise
                     options.UseCamelCasing(false);
                 });
 
+            services.AddApiVersioning(
+                options =>
+                {
+                    options.ReportApiVersions = true;
+                });
+            services.AddVersionedApiExplorer(
+                options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+                    options.SubstituteApiVersionInUrl = true;
+                });
+
             services.AddResponseCompression(o =>
             {
                 o.Providers.Add<GzipCompressionProvider>();
                 o.Providers.Add<BrotliCompressionProvider>();
             });
+
+            services.AddAuthorization(o =>
+            {
+                o.AddPolicy(Scopes.ReadAccess, builder =>
+                    builder.RequireAssertion(context =>
+                        context.User.FindFirst("scope")?.Value.Split(' ').Contains(Scopes.ReadAccess) ?? false));
+                o.AddPolicy(Scopes.WriteAccess, builder =>
+                    builder.RequireAssertion(context =>
+                        context.User.FindFirst("scope")?.Value.Split(' ').Contains(Scopes.WriteAccess) ?? false));
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.Authority = "https://login.microsoftonline.com/0b53d2c1-bc55-4ab3-a161-927d289257f2/v2.0";
+                    o.Audience = "4be39034-c55a-4ab3-bd3a-38fa0664bb53";
+                });
 
             services.AddDbContext<DevCruiseDbContext>(options =>
             {
@@ -50,11 +84,33 @@ namespace Euricom.DevCruise
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-                c.AddSecurityDefinition("oauth", new OpenApiSecurityScheme
+                foreach (var description in ApiVersionDescriptionProvider.ApiVersionDescriptions)
                 {
-                    OpenIdConnectUrl = new Uri("https://login.microsoftonline.com/euri.com/v2.0/.well-known/openid-configuration")
+                    c.SwaggerDoc(description.GroupName, new OpenApiInfo
+                    {
+                        Title = "DevCruise API",
+                        Version = description.GroupName.ToLower(),
+                        Description = description.IsDeprecated ? "Deprecated" : ""
+                    });
+                }
+
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
+                    {
+                        Implicit = new OpenApiOAuthFlow
+                        {
+                            AuthorizationUrl = new Uri("https://login.microsoftonline.com/0b53d2c1-bc55-4ab3-a161-927d289257f2/oauth2/v2.0/authorize"),
+                            Scopes = new Dictionary<string, string>
+                            {
+                                { Scopes.ReadAccess, "Access read operations" },
+                                { Scopes.WriteAccess, "Access write operations" }
+                            }
+                        }
+                    }
                 });
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
 
             services.AddScoped(s =>
@@ -64,8 +120,10 @@ namespace Euricom.DevCruise
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
+            ApiVersionDescriptionProvider = provider;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -77,11 +135,22 @@ namespace Euricom.DevCruise
 
             app.UseSwagger();
 
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DevCruise API V1"));
+            app.UseSwaggerUI(c =>
+            {
+                c.OAuthClientId("4be39034-c55a-4ab3-bd3a-38fa0664bb53");
+                c.OAuthAppName("DevCruise API SwaggerUI");
+
+                foreach (var description in provider.ApiVersionDescriptions)
+                {
+                    c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                        $"DevCruise API {description.GroupName.ToUpperInvariant()}{(description.IsDeprecated ? " (DEPRECATED)" : "")}");
+                }
+            });
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -2,15 +2,20 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Euricom.DevCruise.Controllers.Extensions;
 using Euricom.DevCruise.Model;
+using Euricom.DevCruise.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Euricom.DevCruise.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion( "1.0" )]
     [ApiController]
+    [Authorize(Scopes.ReadAccess)]
     public class SlotController : ControllerBase
     {
         private readonly DevCruiseDbContext _dbContext;
@@ -34,9 +39,12 @@ namespace Euricom.DevCruise.Controllers
                     .ThenInclude(sp => sp.Speaker)
                 .SingleOrDefaultAsync(s => s.StartTime == startTimeUtc && s.Room == room);
 
-            if (slot == null) return NotFound();
+            if (slot == null)
+                return this.Problem(StatusCodes.Status404NotFound, nameof(startTime),
+                    $"A slot in room {room} and starting at {startTime:g} cannot be found");
 
             return Ok(_mapper.Map<ViewModels.SlotDetail>(slot));
+
         }
 
         [HttpGet]
@@ -50,25 +58,30 @@ namespace Euricom.DevCruise.Controllers
                 .ToListAsync()));
 
         [HttpPost]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SlotDetail), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> CreateSlots([FromBody] ViewModels.Slot newSlot)
+        public async Task<IActionResult> CreateSlots([FromBody] ViewModels.Slot newSlot, ApiVersion apiVersion)
         {
             var startTimeUtc = newSlot.StartTime.UtcDateTime;
             var endTimeUtc = newSlot.EndTime.UtcDateTime;
 
             var overlappingSlotExists = await _dbContext.Slots.AnyAsync(s =>
                 s.Room == newSlot.Room && s.EndTime >= startTimeUtc && s.StartTime <= endTimeUtc);
-            if (overlappingSlotExists) return Conflict();
+            if (overlappingSlotExists)
+                return this.Problem(StatusCodes.Status409Conflict, nameof(newSlot.StartTime),
+                    $"A slot in room {newSlot.Room} starting at {newSlot.StartTime:g} and ending {newSlot.EndTime:g} would overlap other slots");
 
             var slot = _mapper.Map<Slot>(newSlot);
             if (!string.IsNullOrEmpty(newSlot.SessionCode))
             {
                 var session = await _dbContext.Sessions.SingleOrDefaultAsync(s => s.Code == newSlot.SessionCode);
                 if (session == null)
-                    return NotFound(new { sessionCode = newSlot.SessionCode });
+                    return this.Problem(StatusCodes.Status404NotFound, nameof(newSlot.SessionCode),
+                        $"Session with code {newSlot.SessionCode} not found");
+
                 slot.Session = session;
             }
 
@@ -76,17 +89,20 @@ namespace Euricom.DevCruise.Controllers
             {
                 var speakers = await _dbContext.Speakers.Where(s => newSlot.Speakers.Contains(s.Email)).ToListAsync();
                 if (speakers.Count != newSlot.Speakers.Length)
-                    return NotFound(new { speakers = newSlot.Speakers.Except(speakers.Select(s => s.Email)).ToArray() });
+                    return this.Problem(StatusCodes.Status404NotFound, nameof(newSlot.Speakers),
+                        $"Speaker(s) with email { string.Join(", ", newSlot.Speakers.Except(speakers.Select(s => s.Email)))} not found");
+
                 slot.SlotSpeakers = speakers.Select(s => new SlotSpeaker { Speaker = s }).ToList();
             }
 
             await _dbContext.AddAsync(slot);
             await _dbContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetSlot), new { room = slot.Room, startTime = slot.StartTime },
+            return CreatedAtAction(nameof(GetSlot), new { room = slot.Room, startTime = slot.StartTime, version = apiVersion.ToString() },
                 _mapper.Map<ViewModels.SlotDetail>(slot));
         }
 
         [HttpPut("{room}/{startTime}")]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SlotDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -98,13 +114,17 @@ namespace Euricom.DevCruise.Controllers
             var updatedEndTimeUtc = updatedSlot.EndTime.UtcDateTime;
 
             var slot = await _dbContext.Slots.SingleOrDefaultAsync(s => s.Room == room && s.StartTime == startTimeUtc);
-            if (slot == null) return NotFound();
+            if (slot == null)
+                return this.Problem(StatusCodes.Status404NotFound, nameof(startTime),
+                    $"A slot in room {room} and starting at {startTime:g} cannot be found");
 
             if (!Equals(updatedSlot.Room, room) || !Equals(updatedStartTimeUtc, startTimeUtc) || !Equals(updatedEndTimeUtc, slot.EndTime))
             {
-                var overlappingSlotExists = await _dbContext.Slots.AnyAsync(s =>
+                var overlappingSlotExists = await _dbContext.Slots.AnyAsync(s => s.Id != slot.Id &&
                     s.Room == updatedSlot.Room && s.EndTime >= updatedStartTimeUtc && s.StartTime <= updatedEndTimeUtc);
-                if (overlappingSlotExists) return Conflict();
+                if (overlappingSlotExists)
+                    return this.Problem(StatusCodes.Status409Conflict, nameof(updatedSlot.StartTime),
+                        $"A slot in room {updatedSlot.Room} starting at {updatedSlot.StartTime:g} and ending {updatedSlot.EndTime:g} would overlap other slots");
             }
 
             _mapper.Map(updatedSlot, slot);
@@ -115,6 +135,7 @@ namespace Euricom.DevCruise.Controllers
         }
 
         [HttpDelete("{room}/{startTime}")]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SlotDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -122,7 +143,9 @@ namespace Euricom.DevCruise.Controllers
         {
             var startTimeUtc = startTime.UtcDateTime;
             var slot = await _dbContext.Slots.SingleOrDefaultAsync(s => s.Room == room && s.StartTime == startTimeUtc);
-            if (slot == null) return NotFound();
+            if (slot == null)
+                return this.Problem(StatusCodes.Status404NotFound, nameof(startTime),
+                    $"A slot in room {room} and starting at {startTime:g} cannot be found");
 
             _dbContext.Slots.Remove(slot);
             await _dbContext.SaveChangesAsync();
