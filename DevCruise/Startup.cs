@@ -60,6 +60,13 @@ namespace Euricom.DevCruise
                 o.Providers.Add<BrotliCompressionProvider>();
             });
 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(o =>
+                {
+                    o.Authority = "https://login.microsoftonline.com/0b53d2c1-bc55-4ab3-a161-927d289257f2/v2.0";
+                    o.Audience = "4be39034-c55a-4ab3-bd3a-38fa0664bb53";
+                });
+
             services.AddAuthorization(o =>
             {
                 o.AddPolicy(Scopes.ReadAccess, builder =>
@@ -69,13 +76,6 @@ namespace Euricom.DevCruise
                     builder.RequireAssertion(context =>
                         context.User.FindFirst("scope")?.Value.Split(' ').Contains(Scopes.WriteAccess) ?? false));
             });
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(o =>
-                {
-                    o.Authority = "https://login.microsoftonline.com/0b53d2c1-bc55-4ab3-a161-927d289257f2/v2.0";
-                    o.Audience = "4be39034-c55a-4ab3-bd3a-38fa0664bb53";
-                });
 
             services.AddDbContext<DevCruiseDbContext>(options =>
             {

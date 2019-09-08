@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Euricom.DevCruise.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
-    [ApiVersion( "1.0" )]
+    [ApiVersion("1.0")]
     [ApiController]
     [Authorize(Scopes.ReadAccess)]
     public class SlotController : ControllerBase
@@ -87,7 +87,7 @@ namespace Euricom.DevCruise.Controllers
 
             if (newSlot.Speakers?.Any() ?? false)
             {
-                var speakers = await _dbContext.Speakers.Where(s => newSlot.Speakers.Contains(s.Email)).ToListAsync();
+                var speakers = await _dbContext.Speakers.Where(s => newSlot.Speakers.Contains(s.Email)).Distinct().ToListAsync();
                 if (speakers.Count != newSlot.Speakers.Length)
                     return this.Problem(StatusCodes.Status404NotFound, nameof(newSlot.Speakers),
                         $"Speaker(s) with email { string.Join(", ", newSlot.Speakers.Except(speakers.Select(s => s.Email)))} not found");
@@ -113,7 +113,11 @@ namespace Euricom.DevCruise.Controllers
             var updatedStartTimeUtc = updatedSlot.StartTime.UtcDateTime;
             var updatedEndTimeUtc = updatedSlot.EndTime.UtcDateTime;
 
-            var slot = await _dbContext.Slots.SingleOrDefaultAsync(s => s.Room == room && s.StartTime == startTimeUtc);
+            var slot = await _dbContext.Slots
+                .Include(s => s.Session)
+                .Include(s => s.SlotSpeakers)
+                .ThenInclude(s => s.Speaker)
+                .SingleOrDefaultAsync(s => s.Room == room && s.StartTime == startTimeUtc);
             if (slot == null)
                 return this.Problem(StatusCodes.Status404NotFound, nameof(startTime),
                     $"A slot in room {room} and starting at {startTime:g} cannot be found");
@@ -128,10 +132,58 @@ namespace Euricom.DevCruise.Controllers
             }
 
             _mapper.Map(updatedSlot, slot);
-            //TODO session, speakers
+            var result = await UpdateSession(updatedSlot, slot) ??
+                         await UpdateSpeakers(updatedSlot, slot);
+
+            if (result != null)
+                return result;
+
             await _dbContext.SaveChangesAsync();
 
             return Ok(_mapper.Map<ViewModels.SlotDetail>(slot));
+        }
+
+        private async Task<IActionResult> UpdateSession(ViewModels.Slot updatedSlot, Slot slot)
+        {
+            if (updatedSlot.SessionCode == slot.Session?.Code) return null;
+            if (updatedSlot.SessionCode == null)
+                slot.Session = null;
+            else
+            {
+                var session = await _dbContext.Sessions.SingleOrDefaultAsync(s => s.Code == updatedSlot.SessionCode);
+                if (session == null)
+                {
+                    return this.Problem(StatusCodes.Status400BadRequest, nameof(updatedSlot.SessionCode),
+                        $"Session with code {updatedSlot.SessionCode} not found");
+                }
+
+                slot.Session = session;
+            }
+            return null;
+        }
+
+        private async Task<IActionResult> UpdateSpeakers(ViewModels.Slot updatedSlot, Slot slot)
+        {
+            if (updatedSlot.Speakers == null) return null;
+
+            var toKeep = slot.SlotSpeakers.Where(s => updatedSlot.Speakers.Contains(s.Speaker.Email)).Distinct().ToArray();
+            var toAddEmails = updatedSlot.Speakers.Except(toKeep.Select(s => s.Speaker.Email)).Distinct().ToArray();
+            var toAdd = (await _dbContext.Speakers
+                .Where(s => toAddEmails.Contains(s.Email))
+                .ToListAsync())
+                .Select(s => new SlotSpeaker { Speaker = s, Slot = slot })
+                .ToArray();
+
+            var slotSpeakers = toKeep.Concat(toAdd).ToList();
+            var missing = updatedSlot.Speakers.Except(slotSpeakers.Select(s => s.Speaker.Email)).ToArray();
+            if (missing.Any())
+            {
+                return this.Problem(StatusCodes.Status400BadRequest, nameof(updatedSlot.Speakers),
+                    $"Speaker(s) with email {string.Join(", ", missing)} not found");
+            }
+
+            slot.SlotSpeakers = slotSpeakers;
+            return null;
         }
 
         [HttpDelete("{room}/{startTime}")]

@@ -216,11 +216,10 @@ namespace Euricom.DevCruise.Model
                                                                                        "behandeld hebben. Als je nog niet de kans hebt gehad om 's avonds deel te nemen of als ervaringen met je collega's wil " +
                                                                                        "uitwisselen, dan is deze workshop zeker iets voor jou!", Code = "DC19-21" },
                 new Session { Title = "Keynote", Description = "", Code = "DC19-22" },
-                new Session { Title = "IoT: Greenhouse insights continued", Description = "Een verderzetting van de sessie van 2018. Krijg inzicht in je serre en tuin gebruik makende van Arduino en sensoren die " +
-                                                                                          "beheerd worden door een IoT Edge device. Aan de hand van deze gegevens stuur je verschillende actoren aan die de omgeving " +
-                                                                                          "veranderen (water, licht). In deze sessie zal ik een kleine recap geven van vorige sessie gevolgd door mijn ervaringen om " +
-                                                                                          "Arduino's te connecteren met de Azure IoT omgeving. Evenals de integratie van commit tot release on the edge gebruik " +
-                                                                                          "makende van Azure DevOps.", Code = "DC19-23" },
+                new Session { Title = "OAuth 2.0 en OpenID Connect", Description = "Hoe werkt OAuth 2.0 eigenlijk? Wat is OpenID Connect? Wat voor tokens bestaan er allemaal en waar dienen ze voor? Welk soort " +
+                                                                                   "flow moet ik kiezen voor mijn applicatie? Op deze en nog veel meer vragen probeer ik in deze sessie een duidelijk antwoord te " +
+                                                                                   "geven. Geen voorkennis vereist, nuttig voor zowel voor frontend als backend, .NET en JS. Voorbeelden met AzureAD, AD B2C en " +
+                                                                                   "Google Identity.", Code = "DC19-23" },
                 new Session { Title = "React: What the hook", Description = "React 16.8 introduceerde hooks als een nieuwe manier om state en andere React features te gebruiken. Wat zijn hooks precies en waarom " +
                                                                             "zou je ze willen gebruiken? In deze sessie ga ik een antwoord bieden op deze vragen.", Code = "DC19-24" },
                 new Session { Title = "Workshop klantgerichtheid", Description = "", Code = "DC19-25" },
