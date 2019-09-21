@@ -12,11 +12,9 @@ namespace Euricom.DevCruise.Model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var session = modelBuilder.Entity<Session>();
-            session.HasKey(s => new { s.Id });
             session.HasIndex(s => s.Code).IsUnique();
 
             var slot = modelBuilder.Entity<Slot>();
-            slot.HasKey(s => s.Id);
             slot.HasMany(s => s.SlotSpeakers)
                 .WithOne(s => s.Slot)
                 .HasForeignKey(s => s.SlotId)
@@ -26,7 +24,6 @@ namespace Euricom.DevCruise.Model
             slot.HasIndex(s => new { s.Room, s.StartTime }).IsUnique();
 
             var speaker = modelBuilder.Entity<Speaker>();
-            speaker.HasKey(s => s.Id);
             speaker.HasMany<SlotSpeaker>()
                 .WithOne(s => s.Speaker)
                 .HasForeignKey(s => s.SpeakerId)

@@ -4,8 +4,8 @@ namespace Euricom.DevCruise.Model
 {
     public class Speaker
     {
+        [Key]
         public int Id { get; set; }
-
         [Required]
         [MaxLength(250)]
         public string Email { get; set; }

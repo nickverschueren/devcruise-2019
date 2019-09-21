@@ -4,6 +4,7 @@ namespace Euricom.DevCruise.Model
 {
     public class Session
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]

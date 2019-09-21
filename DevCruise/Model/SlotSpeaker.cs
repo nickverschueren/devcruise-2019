@@ -4,10 +4,10 @@ namespace Euricom.DevCruise.Model
 {
     public class SlotSpeaker
     {
-        [Required]
+        [Key]
         public int SlotId { get; set; }
 
-        [Required]
+        [Key]
         public int SpeakerId { get; set; }
 
         [Required]

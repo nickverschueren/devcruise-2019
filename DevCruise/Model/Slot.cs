@@ -6,6 +6,7 @@ namespace Euricom.DevCruise.Model
 {
     public class Slot
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
