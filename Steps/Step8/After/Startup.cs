@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace DevCruise
 {
@@ -14,6 +15,7 @@ namespace DevCruise
             services.AddResponseCompression(o => o.Providers.Add<GzipCompressionProvider>()); 
             services.AddControllers();      
             services.AddDbContext<DevCruiseDbContext>(o => o.UseSqlite("Data Source=App_Data/DevCruiseDb.sqlite;"));
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1.0", new OpenApiInfo { Title = "DevCruise API Documentation", Version = "1.0" }));
         }
 
         public void Configure(IApplicationBuilder app)
@@ -22,6 +24,8 @@ namespace DevCruise
             app.UseResponseCompression();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1.0/swagger.json", "DevCruise API v1.0"));
             app.UseRouting();
             app.UseEndpoints(builder => builder.MapControllers());
         }
