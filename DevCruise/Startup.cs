@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
 using Euricom.DevCruise.Extensions;
 using Euricom.DevCruise.Model;
@@ -69,12 +68,8 @@ namespace Euricom.DevCruise
 
             services.AddAuthorization(o =>
             {
-                o.AddPolicy(Scopes.ReadAccess, builder =>
-                    builder.RequireAssertion(context =>
-                        context.User.FindFirst("scope")?.Value.Split(' ').Contains(Scopes.ReadAccess) ?? false));
-                o.AddPolicy(Scopes.WriteAccess, builder =>
-                    builder.RequireAssertion(context =>
-                        context.User.FindFirst("scope")?.Value.Split(' ').Contains(Scopes.WriteAccess) ?? false));
+                o.AddPolicy(Scopes.ReadAccess, builder => builder.RequireAssertion(context => context.User.HasScope(Scopes.ReadAccess)));
+                o.AddPolicy(Scopes.WriteAccess, builder => builder.RequireAssertion(context => context.User.HasScope(Scopes.WriteAccess)));
             });
 
             services.AddDbContext<DevCruiseDbContext>(options =>
@@ -104,8 +99,8 @@ namespace Euricom.DevCruise
                             AuthorizationUrl = new Uri("https://login.microsoftonline.com/0b53d2c1-bc55-4ab3-a161-927d289257f2/oauth2/v2.0/authorize"),
                             Scopes = new Dictionary<string, string>
                             {
-                                { Scopes.ReadAccess, "Access read operations" },
-                                { Scopes.WriteAccess, "Access write operations" }
+                                { Scopes.AadReadAccess, "Access read operations" },
+                                { Scopes.AadWriteAccess, "Access write operations" }
                             }
                         }
                     }
@@ -147,10 +142,11 @@ namespace Euricom.DevCruise
                 }
             });
 
+            app.UseRouting();
+
+            // Must be used AFTER Routing middleware!
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {

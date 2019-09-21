@@ -1,8 +1,20 @@
-﻿namespace Euricom.DevCruise.Security
+﻿using System.Linq;
+using System.Security.Claims;
+
+namespace Euricom.DevCruise.Security
 {
     public static class Scopes
     {
-        public const string ReadAccess = "api://devCruiseApi/readAccess";
-        public const string WriteAccess = "api://devCruiseApi/writeAccess";
+        public const string ReadAccess = "readAccess";
+        public const string WriteAccess = "writeAccess";
+
+        public const string AadScopePrefix = "api://devCruiseApi/";
+        public const string AadReadAccess = AadScopePrefix + ReadAccess;
+        public const string AadWriteAccess = AadScopePrefix + WriteAccess;
+
+        public const string ScopeClaimType = "http://schemas.microsoft.com/identity/claims/scope";
+
+        public static bool HasScope(this ClaimsPrincipal user, string scopeName)
+            => user.FindFirst(Scopes.ScopeClaimType)?.Value.Split(' ').Contains(Scopes.ReadAccess) ?? false;
     }
 }

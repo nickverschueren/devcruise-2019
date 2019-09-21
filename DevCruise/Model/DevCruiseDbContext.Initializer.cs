@@ -236,7 +236,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 7, 30, 0),
                     EndTime = new DateTime(2019, 9, 28, 8, 0, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[21],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] } }
                 },
@@ -244,7 +244,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 8, 10, 0),
                     EndTime = new DateTime(2019, 9, 28, 10, 30, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[14],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[11] }}
                 },
@@ -252,7 +252,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 8, 10, 0),
                     EndTime = new DateTime(2019, 9, 28, 10, 30, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[2],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[2] }}
                 },
@@ -260,7 +260,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 8, 10, 0),
                     EndTime = new DateTime(2019, 9, 28, 10, 30, 0),
-                    Room = Room.Room3,
+                    Room = Room.Nador,
                     Session = sessions[20],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] }}
                 },
@@ -268,7 +268,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 28, 15, 35, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[4],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[3] }}
                 },
@@ -276,7 +276,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 28, 15, 35, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[8],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[6] }}
                 },
@@ -284,7 +284,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 28, 15, 35, 0),
-                    Room = Room.Room3,
+                    Room = Room.Nador,
                     Session = sessions[15],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[12] }}
                 },
@@ -292,7 +292,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 15, 50, 0),
                     EndTime = new DateTime(2019, 9, 28, 16, 40, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[6],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[4] }}
                 },
@@ -300,7 +300,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 15, 50, 0),
                     EndTime = new DateTime(2019, 9, 28, 16, 40, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[0],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[0] }}
                 },
@@ -308,7 +308,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 15, 50, 0),
                     EndTime = new DateTime(2019, 9, 28, 17, 45, 0),
-                    Room = Room.Room3,
+                    Room = Room.Nador,
                     Session = sessions[12],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[10] }}
                 },
@@ -316,7 +316,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 16, 55, 0),
                     EndTime = new DateTime(2019, 9, 28, 17, 45, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[16],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[13] }}
                 },
@@ -324,7 +324,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 28, 16, 55, 0),
                     EndTime = new DateTime(2019, 9, 28, 17, 45, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[22],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[16] }}
                 },
@@ -332,7 +332,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 07, 30, 0),
                     EndTime = new DateTime(2019, 9, 30, 10, 30, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[1],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[1] }}
                 },
@@ -340,7 +340,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 07, 30, 0),
                     EndTime = new DateTime(2019, 9, 30, 8, 20, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[13],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[10] }}
                 },
@@ -348,7 +348,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 07, 30, 0),
                     EndTime = new DateTime(2019, 9, 30, 09, 25, 0),
-                    Room = Room.Room3,
+                    Room = Room.Nador,
                     Session = sessions[11],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[9] }}
                 },
@@ -356,7 +356,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 08, 35, 0),
                     EndTime = new DateTime(2019, 9, 30, 09, 25, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[18],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] }}
                 },
@@ -364,7 +364,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 09, 40, 0),
                     EndTime = new DateTime(2019, 9, 30, 10, 30, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[10],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[8] }}
                 },
@@ -372,13 +372,13 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 09, 40, 0),
                     EndTime = new DateTime(2019, 9, 30, 10, 30, 0),
-                    Room = Room.Room3
+                    Room = Room.Nador
                 },
                 new Slot
                 {
                     StartTime = new DateTime(2019, 9, 30, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 30, 15, 35, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[7],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[5] }}
                 },
@@ -386,7 +386,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 30, 15, 35, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[23],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[17] }}
                 },
@@ -394,7 +394,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 14, 45, 0),
                     EndTime = new DateTime(2019, 9, 30, 16, 40, 0),
-                    Room = Room.Room3,
+                    Room = Room.Nador,
                     Session = sessions[19],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] }}
                 },
@@ -402,7 +402,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 15, 50, 0),
                     EndTime = new DateTime(2019, 9, 30, 16, 40, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[3],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[3] }}
                 },
@@ -410,7 +410,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 15, 50, 0),
                     EndTime = new DateTime(2019, 9, 30, 16, 40, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[9],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[7] }}
                 },
@@ -418,7 +418,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 16, 55, 0),
                     EndTime = new DateTime(2019, 9, 30, 17, 45, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[5],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[4] }}
                 },
@@ -426,7 +426,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 16, 55, 0),
                     EndTime = new DateTime(2019, 9, 30, 17, 45, 0),
-                    Room = Room.Room2,
+                    Room = Room.Rabat,
                     Session = sessions[17],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[14] }}
                 },
@@ -434,13 +434,13 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 9, 30, 16, 55, 0),
                     EndTime = new DateTime(2019, 9, 30, 17, 45, 0),
-                    Room = Room.Room3
+                    Room = Room.Nador
                 },
                 new Slot
                 {
                     StartTime = new DateTime(2019, 10, 1, 08, 30, 0),
                     EndTime = new DateTime(2019, 10, 1, 09, 20, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[24],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] }}
                 },
@@ -448,7 +448,7 @@ namespace Euricom.DevCruise.Model
                 {
                     StartTime = new DateTime(2019, 10, 1, 09, 30, 0),
                     EndTime = new DateTime(2019, 10, 1, 10, 0, 0),
-                    Room = Room.Room1,
+                    Room = Room.Fes,
                     Session = sessions[25],
                     SlotSpeakers = new List<SlotSpeaker> { new SlotSpeaker { Speaker = speakers[15] }}
                 }

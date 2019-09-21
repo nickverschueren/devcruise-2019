@@ -2,8 +2,8 @@ namespace Euricom.DevCruise.Model
 {
     public enum Room
     {
-        Room1 = 1,
-        Room2 = 2,
-        Room3 = 3
+        Fes = 1,
+        Rabat = 2,
+        Nador = 3
     }
 }
