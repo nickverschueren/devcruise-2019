@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Euricom.DevCruise.Controllers.Extensions;
 using Euricom.DevCruise.Model;
 using Euricom.DevCruise.Security;
@@ -40,7 +41,7 @@ namespace Euricom.DevCruise.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ViewModels.Session[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSessions()
-            => Ok(_mapper.Map<ViewModels.Session[]>(await _dbContext.Sessions.ToListAsync()));
+            => Ok(await _dbContext.Sessions.ProjectTo<ViewModels.Session>(_mapper.ConfigurationProvider).ToListAsync());
 
         [HttpPost]
         [Authorize(Scopes.WriteAccess)]

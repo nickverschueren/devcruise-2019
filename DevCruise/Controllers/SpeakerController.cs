@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Euricom.DevCruise.Controllers.Extensions;
 using Euricom.DevCruise.Model;
 using Euricom.DevCruise.Security;
@@ -42,7 +43,7 @@ namespace Euricom.DevCruise.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(ViewModels.Speaker[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSpeakers()
-            => Ok(_mapper.Map<ViewModels.Speaker[]>(await _dbContext.Speakers.ToListAsync()));
+            => Ok(await _dbContext.Speakers.ProjectTo<ViewModels.Speaker>(_mapper.ConfigurationProvider).ToListAsync());
 
         [HttpPost]
         [Authorize(Scopes.WriteAccess)]
@@ -60,7 +61,7 @@ namespace Euricom.DevCruise.Controllers
             await _dbContext.AddAsync(speaker);
             await _dbContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetSpeaker), new { email = speaker.Email, version = apiVersion.ToString()  },
+            return CreatedAtAction(nameof(GetSpeaker), new { email = speaker.Email, version = apiVersion.ToString() },
                 _mapper.Map<ViewModels.SpeakerDetail>(newSpeaker));
         }
 

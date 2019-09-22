@@ -108,10 +108,8 @@ namespace Euricom.DevCruise
                 c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
 
-            services.AddScoped(s =>
-                new MapperConfiguration(c =>
-                    c.AddMaps(typeof(Startup)))
-                    .CreateMapper(s.GetService));
+            services.AddSingleton<AutoMapper.IConfigurationProvider>(s => new MapperConfiguration(c => c.AddMaps(typeof(Startup))));
+            services.AddScoped(s => s.GetService<AutoMapper.IConfigurationProvider>().CreateMapper(s.GetService));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
