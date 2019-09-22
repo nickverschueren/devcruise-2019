@@ -2,6 +2,8 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DevCruise.Controllers.Extensions;
 using DevCruise.Model;
+using DevCruise.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,7 @@ namespace DevCruise.Controllers
 {
     [ApiController]
     [Route("/api/session")]
+    [Authorize(Scopes.ReadAccess)]
     public class SessionController : ControllerBase
     {
         private readonly DevCruiseDbContext _dbContext;
@@ -42,6 +45,7 @@ namespace DevCruise.Controllers
         }
 
         [HttpPost]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SessionDetail[]), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -60,6 +64,7 @@ namespace DevCruise.Controllers
         }
 
         [HttpPut("{code}")]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SessionDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -84,6 +89,7 @@ namespace DevCruise.Controllers
         }
         
         [HttpDelete("{code}")]
+        [Authorize(Scopes.WriteAccess)]
         [ProducesResponseType(typeof(ViewModels.SessionDetail), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
