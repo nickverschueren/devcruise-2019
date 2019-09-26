@@ -15,6 +15,6 @@ namespace DevCruise.Security
         public const string ScopeClaimType = "http://schemas.microsoft.com/identity/claims/scope";
 
         public static bool HasScope(this ClaimsPrincipal user, string scopeName)
-            => user.FindFirst(Scopes.ScopeClaimType)?.Value.Split(' ').Contains(Scopes.ReadAccess) ?? false;
+            => user.FindFirst(Scopes.ScopeClaimType)?.Value.Split(' ').Contains(scopeName) ?? false;
     }
 }
